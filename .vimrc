@@ -1,12 +1,16 @@
+call pathogen#infect()
+syntax on
+filetype plugin indent on
+
 set nocompatible
 source $VIMRUNTIME/vimrc_example.vim
-source $VIMRUNTIME/mswin.vim
 
 behave mswin
 
 " feel free to choose :set background=light for a different style 
+syntax enable
 set background=dark 
-colors twilight256 
+colorscheme solarized
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Files and backups
@@ -178,3 +182,6 @@ nnoremap <silent> <C-f><C-e> :FufEditInfo<CR>
 nnoremap <silent> <C-f><C-r> :FufRenewCache<CR>
 nnoremap <silent> <C-e><C-f> :NERDTreeToggle<CR>
 nnoremap <silent> <C-e><C-t> :TlistToggle<CR>
+cmap w!! w !sudo tee % >/dev/null
+cmap W w
+vmap y ygv<Esc>
