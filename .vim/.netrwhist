@@ -1,0 +1,7 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhist_cnt =5
+let g:netrw_dirhist_1='/Users/Chris/System/nix-tools/.git'
+let g:netrw_dirhist_2='/Users/Chris/Development/angular-web-notification/.git/hooks'
+let g:netrw_dirhist_3='/vidyard/VidyardFridge'
+let g:netrw_dirhist_4='/Users/csilivestru/.pow'
+let g:netrw_dirhist_5='/Users/csilivestru/.vim'

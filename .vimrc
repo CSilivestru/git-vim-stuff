@@ -1,61 +1,212 @@
-call pathogen#infect()
-syntax on
-filetype plugin indent on
-
 set nocompatible
-source $VIMRUNTIME/vimrc_example.vim
 
-behave mswin
+filetype on
+filetype off
 
-" feel free to choose :set background=light for a different style 
+set clipboard=unnamed
+set clipboard=unnamedplus
+vnoremap <C-c> "*y
+
+vnoremap <C-h> "*y
+:let mapleader = ";"
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Enable Pathogen
+
+execute pathogen#infect()
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Command-T ignores
+
+let g:CommandTWildIgnore=&wildignore . ",**/node_modules/*,**coverage/*,**/bower_components/*"
+nmap <S-t> :CommandT<cr>
+let g:CommandTMaxFiles=50000
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Color settings
 syntax enable
-set background=dark 
+set background=dark
+let g:solarized_termcolors=16
+let g:solarized_visibility = "high"
+let g:solarized_contrast = "high"
 colorscheme solarized
 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Syntastic settings
+
+let g:syntastic_javascript_checkers = ['eslint']
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Files and backups
+" Allow backspacing over everything in insert mode
+
+set backspace=indent,eol,start
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Turn backup off, since most stuff is in SVN, git anyway...
+" Disable folding.
+
+set nofoldenable
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Fast saving (\w)
+nmap <leader>w :w!<cr>
+nnoremap :W<cr> :w<cr>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Searching...
+
+" Ignore case when searching
+set ignorecase
+" When searching try to be smart about cases
+set smartcase
+" Highlight search results
+set hlsearch
+" Makes search act like search in modern browsers
+set incsearch
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Enable syntax highlighting
+
+syntax on
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Enable mouse (if terminal has support for it)
+
+if has('mouse')
+  set mouse=a
+endif
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Always set the mouse cursor position
+
+set ruler
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Turn off backups, etc.
+
 set nobackup
 set nowb
 set noswapfile
 
-" allow switching of buffers without saving 
-" with great power comes great responsibility
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Allow switching between buffers without saving .
+
 set hidden
+:command! DD :bn|:bd#
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Always show line numbers.
 
 set number
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Don't wrap
+
+set nowrap
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Set xterm title.
+
 set title
-set wrap!
-syntax on
-set nofoldenable
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Custom file extensions..
 
 au! BufRead,BufNewFile Jakefile     setfiletype javascript
+au! BufRead,BufNewFile *.mustache   setfiletype mustache
+au! BufRead,BufNewFile *.less       setfiletype less
 
-autocmd FileType * set tabstop=4|set shiftwidth=4
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Indentation settings..
+
+set autoindent
+filetype plugin indent on
+autocmd FileType * set tabstop=2|set shiftwidth=2
 autocmd FileType ruby set tabstop=2|set shiftwidth=2
+autocmd FileType javascript set tabstop=2|set shiftwidth=2
+autocmd FileType less set tabstop=2|set shiftwidth=2
+autocmd FileType css set tabstop=2|set shiftwidth=2
+autocmd FileType stylus set tabstop=2|set shiftwidth=2
+autocmd FileType html set tabstop=2|set shiftwidth=2
+autocmd FileType mustache set tabstop=2|set shiftwidth=2
+autocmd FileType coffee set tabstop=2|set shiftwidth=2
+autocmd FileType jade set tabstop=2|set shiftwidth=2
+autocmd FileType text setlocal textwidth=78 " for git commits
 set expandtab
 
-" save with \s to make me happy
-noremap <Leader>s :update<CR>
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Map space to / (search) and c-space to ? (backgwards search)
 
-""""""""""""""""""""""""""""""
-" => Visual mode related
-""""""""""""""""""""""""""""""
-" Really useful!
-"  In visual mode when you press * or # to search for the current selection
+map <space> /
+map <c-space> ?
+map <silent> <leader><cr> :noh<cr>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"  Easier way to move between windows.
+
+map <C-j> <C-W>j
+map <C-k> <C-W>k
+map <C-h> <C-W>h
+map <C-l> <C-W>l
+
+imap jj <Esc>
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"  Avoid hitting escape in insert mode
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"  NERD Tree Commands
+
+nnoremap <silent> <C-e><C-f> :NERDTreeToggle<CR>
+map <leader>r :NERDTreeFind<cr>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"  Tag List Commands
+
+nnoremap <silent> <C-e><C-t> :TlistToggle<CR>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"  FuzzyFinder Commands, etc.
+
+let g:fuf_modesDisable = []
+let g:fuf_abbrevMap = {
+    \   '^vr:' : map(filter(split(&runtimepath, ','), 'v:val !~ "after$"'), 'v:val . ''/**/'''),
+    \   '^m0:' : [ '/mnt/d/0/', '/mnt/j/0/' ],
+    \ }
+let g:fuf_mrufile_maxItem = 300
+let g:fuf_mrucmd_maxItem = 400
+nnoremap <silent> <C-n>      :FufBuffer<CR>
+nnoremap <silent> <C-p>      :FufFileWithCurrentBufferDir<CR>
+nnoremap <silent> <C-f><C-p> :FufFileWithFullCwd<CR>
+nnoremap <silent> <C-f>p     :FufFile<CR>
+nnoremap <silent> <C-f><C-d> :FufDirWithCurrentBufferDir<CR>
+nnoremap <silent> <C-f>d     :FufDirWithFullCwd<CR>
+nnoremap <silent> <C-f>D     :FufDir<CR>
+nnoremap <silent> <C-b>      :FufBookmark<CR>
+nnoremap <silent> <C-f><C-t> :FufTag<CR>
+nnoremap <silent> <C-f>t     :FufTag!<CR>
+noremap  <silent> g]         :FufTagWithCursorWord!<CR>
+nnoremap <silent> <C-f><C-f> :FufTaggedFile<CR>
+nnoremap <silent> <C-f><C-j> :FufJumpList<CR>
+nnoremap <silent> <C-f><C-g> :FufChangeList<CR>
+nnoremap <silent> <C-f><C-q> :FufQuickfix<CR>
+nnoremap <silent> <C-f><C-l> :FufLine<CR>
+nnoremap <silent> <C-f><C-h> :FufHelp<CR>
+nnoremap <silent> <C-f><C-b> :FufAddBookmark<CR>
+vnoremap <silent> <C-f><C-b> :FufAddBookmarkAsSelectedText<CR>
+nnoremap <silent> <C-f><C-e> :FufEditInfo<CR>
+nnoremap <silent> <C-f><C-r> :FufRenewCache<CR>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Visual mode related..
+
+" In visual mode when you press * or # to search for the current selection
 vnoremap <silent> * :call VisualSearch('f')<CR>
 vnoremap <silent> # :call VisualSearch('b')<CR>
-
-" When you press gv you vimgrep after the selected text
-vnoremap <silent> gv :call VisualSearch('gv')<CR>
-
 
 function! CmdLine(str)
     exe "menu Foo.Bar :" . a:str
     emenu Foo.Bar
     unmenu Foo
-endfunction 
+endfunction
 
 " From an idea by Michael Naumann
 function! VisualSearch(direction) range
@@ -78,110 +229,53 @@ function! VisualSearch(direction) range
 endfunction
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Moving around, tabs and buffers
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Map space to / (search) and c-space to ? (backgwards search)
-map <space> /
-map <c-space> ?
-map <silent> <leader><cr> :noh<cr>
+" Pasting blockwise and linewise selections is not possible in Insert and
+" Visual mode without the +virtualedit feature.  They are pasted as if they
+" were characterwise instead.
+" Uses the paste.vim autoload script.
 
-" Smart way to move btw. windows
-map <C-j> <C-W>j
-map <C-k> <C-W>k
-map <C-h> <C-W>h
-map <C-l> <C-W>l
+exe 'inoremap <script> <C-V>' paste#paste_cmd['i']
+exe 'vnoremap <script> <C-V>' paste#paste_cmd['v']
 
-" Use the arrows to something usefull
-" Seems cool, but would need to get used to it :)
-"map <right> :bn<cr>
-"map <left> :bp<cr>
+imap <S-Insert>     <C-V>
+vmap <S-Insert>     <C-V>
 
-set guioptions-=m  "remove menu bar
-set guioptions-=T  "remove toolbar
-set guioptions-=r  "remove right-hand scroll bar
+" For CTRL-V to work autoselect must be off.
+" On Unix we have two selections, autoselect can be used.
+if !has("unix")
+  set guioptions-=a
+endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Building javascript (jslint)
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Comment out selected lines (with JS comments)
+" TODO: figure out how to do with current filetype's comment
 
-set makeprg=node-hint\ %\ --config\ '$HOME/.vim/plugin/jshint/.jslintrc'\ --reporter\ '$HOME/.vim/plugin/jshint/reporter.js'
-set errorformat=%f:%l:%c:%m
-
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Parenthesis/bracket expanding
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-vnoremap $1 <esc>`>a)<esc>`<i(<esc>
-vnoremap $2 <esc>`>a]<esc>`<i[<esc>
-vnoremap $3 <esc>`>a}<esc>`<i{<esc>
-vnoremap $$ <esc>`>a"<esc>`<i"<esc>
-vnoremap $q <esc>`>a'<esc>`<i'<esc>
-vnoremap $e <esc>`>a"<esc>`<i"<esc>
-
-" Map auto complete of (, ", ', [
-inoremap $1 ()<esc>i
-inoremap $2 []<esc>i
-inoremap $3 {}<esc>i
-inoremap $4 {<esc>o}<esc>O
-inoremap $q ''<esc>i
-inoremap $e ""<esc>i
-inoremap $q ''<esc>i
-
-autocmd FileType python set omnifunc=pythoncomplete#Complete
-autocmd FileType javascript set omnifunc=javascriptcomplete#CompleteJS
-autocmd FileType html set omnifunc=htmlcomplete#CompleteTags
-autocmd FileType css set omnifunc=csscomplete#CompleteCSS
-autocmd FileType xml set omnifunc=xmlcomplete#CompleteTags
-autocmd FileType php set omnifunc=phpcomplete#CompletePHP
-autocmd FileType c set omnifunc=ccomplete#Complete
-
+map <leader>g :s/^/\/\//<CR> :silent noh<CR>
+map <leader>G :s/^\/\///<CR> :silent noh<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => RDOC preview
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-command! -nargs=0 RDocPreview call RDocRenderBufferToPreview()
+" Spellcheck en_CA
 
-function! RDocRenderBufferToPreview()
-let rdocoutput = "/tmp/vimrdoc/"
-call system("rdoc " . bufname("%") . " --op " . rdocoutput)
-call system("chromiu    chromiu chromium-browser ". rdocoutput . "index.html")
-endfunction
+map <leader>s :setlocal spell spelllang=en_ca<CR>
+map <leader>S :setlocal nospell<CR>
+
+" Load in a custom config in CWD?
+if filereadable(".vim.custom")
+    so .vim.custom
+endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => FuzzyFinder awesomeness
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let g:fuf_modesDisable = []
-let g:fuf_abbrevMap = {
-    \   '^vr:' : map(filter(split(&runtimepath, ','), 'v:val !~ "after$"'), 'v:val . ''/**/'''),
-    \   '^m0:' : [ '/mnt/d/0/', '/mnt/j/0/' ],
-    \ }
-let g:fuf_mrufile_maxItem = 300
-let g:fuf_mrucmd_maxItem = 400
-nnoremap <silent> <C-n>      :FufBuffer<CR>
-nnoremap <silent> <C-p>      :FufFileWithCurrentBufferDir<CR>
-nnoremap <silent> <C-f><C-p> :FufFileWithFullCwd<CR>
-nnoremap <silent> <C-f>p     :FufFile<CR>
-nnoremap <silent> <C-f><C-d> :FufDirWithCurrentBufferDir<CR>
-nnoremap <silent> <C-f>d     :FufDirWithFullCwd<CR>
-nnoremap <silent> <C-f>D     :FufDir<CR>
-"nnoremap <silent> <C-j>      :FufMruFile<CR>
-"nnoremap <silent> <C-k>      :FufMruCmd<CR>
-nnoremap <silent> <C-b>      :FufBookmark<CR>
-nnoremap <silent> <C-f><C-t> :FufTag<CR>
-nnoremap <silent> <C-f>t     :FufTag!<CR>
-noremap  <silent> g]         :FufTagWithCursorWord!<CR>
-nnoremap <silent> <C-f><C-f> :FufTaggedFile<CR>
-nnoremap <silent> <C-f><C-j> :FufJumpList<CR>
-nnoremap <silent> <C-f><C-g> :FufChangeList<CR>
-nnoremap <silent> <C-f><C-q> :FufQuickfix<CR>
-nnoremap <silent> <C-f><C-l> :FufLine<CR>
-nnoremap <silent> <C-f><C-h> :FufHelp<CR>
-nnoremap <silent> <C-f><C-b> :FufAddBookmark<CR>
-vnoremap <silent> <C-f><C-b> :FufAddBookmarkAsSelectedText<CR>
-nnoremap <silent> <C-f><C-e> :FufEditInfo<CR>
-nnoremap <silent> <C-f><C-r> :FufRenewCache<CR>
-nnoremap <silent> <C-e><C-f> :NERDTreeToggle<CR>
-nnoremap <silent> <C-e><C-t> :TlistToggle<CR>
-cmap w!! w !sudo tee % >/dev/null
-cmap W w
-vmap y ygv<Esc>
+" Airline Config
+
+" Enable the list of buffers
+ let g:airline#extensions#tabline#enabled = 1
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Buffer config
+" Move to the next buffer
+ nmap <S-L> :bnext<CR>
+
+" Move to the previous buffer
+ nmap <S-H> :bprevious<CR>
+
+hi MatchParen cterm=none ctermbg=yellow ctermfg=blue
