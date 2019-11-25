@@ -1,70 +1,57 @@
-# set a fancy prompt (non-color, unless we know we "want" color)
-case "$TERM" in
-    xterm-color) color_prompt=yes;;
-esac
 
-# uncomment for a colored prompt, if the terminal has the capability; turned
-# off by default to not distract the user: the focus in a terminal window
-# should be on the output of commands, not on the prompt
-#force_color_prompt=yes
+[[ -s "$HOME/.profile" ]] && source "$HOME/.profile" # Load the default .profile
 
-if [ -n "$force_color_prompt" ]; then
-    if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
-    # We have color support; assume it's compliant with Ecma-48
-    # (ISO/IEC-6429). (Lack of such support is extremely rare, and such
-    # a case would tend to support setf rather than setaf.)
-    color_prompt=yes
-    else
-    color_prompt=
-    fi
+[[ -s ~/.bashrc ]] && source ~/.bashrc
+
+unalias ls
+alias ll='ls -l'
+alias la='ls -la'
+alias vi='nvim'
+alias vim='nvim'
+
+alias insecure="/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --allow-running-insecure-content --disable-web-security --user-data-dir=~/ChromeUserData/"
+alias dce="docker-compose run --rm"
+alias dcr="docker-compose restart"
+alias restart_touchbar="pkill 'Touch Bar agent'; killall 'ControlStrip';"
+
+alias gp="kubectl get pods"
+
+if [ -f `brew --prefix`/etc/bash_completion ]; then
+    . `brew --prefix`/etc/bash_completion
 fi
 
-if [ "$color_prompt" = yes ]; then
-    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
-else
-    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
-fi
-unset color_prompt force_color_prompt
+function dc() { docker-compose -f docker-compose.dev.yml run --rm web $@;  }
 
-# If this is an xterm set the title to user@host:dir
-case "$TERM" in
-xterm*|rxvt*)
-    PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
-    ;;
-*)
-    ;;
-esac
+go () { cd "/vidyard/$1"; echo -ne "\033]0;$1\007"; ./start.user || ./start.u || ./start.dev;  }
 
 export CLICOLOR=1
-export LSCOLORS=GxFxCxDxBexgedabagaced
+export LSCOLORS=GxFxCxDxBxegedabagaced
 
-RED="\[\033[0;31m\]"
-YELLOW="\[\033[0;33m\]"
-GREEN="\[\033[0;32m\]"
-DEFAULT="\[\e[0m\]"
+function prompt {
+  local BLACK="\[\033[0;30m\]"
+  local BLACKBOLD="\[\033[1;30m\]"
+  local RED="\[\033[0;31m\]"
+  local REDBOLD="\[\033[1;31m\]"
+  local GREEN="\[\033[0;32m\]"
+  local GREENBOLD="\[\033[1;32m\]"
+  local YELLOW="\[\033[0;33m\]"
+  local YELLOWBOLD="\[\033[1;33m\]"
+  local BLUE="\[\033[0;34m\]"
+  local BLUEBOLD="\[\033[1;34m\]"
+  local PURPLE="\[\033[0;35m\]"
+  local PURPLEBOLD="\[\033[1;35m\]"
+  local CYAN="\[\033[0;36m\]"
+  local CYANBOLD="\[\033[1;36m\]"
+  local WHITE="\[\033[0;37m\]"
+  local WHITEBOLD="\[\033[1;37m\]"
+  local RESETCOLOR="\[\e[00m\]"
 
-parse_git_branch() {
-    git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
+  export PS1="\n$RED\u $PURPLE@ $GREEN\w $RESETCOLOR$GREENBOLD\$(git branch 2> /dev/null)\n $BLUE[\#] → $RESETCOLOR"
+  export PS2=" | → $RESETCOLOR"
 }
 
-# http://asemanfar.com/Current-Git-Branch-in-Bash-Prompt    
-PS1="${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\[\033[00m\]\[\033[01;34m\]\w\[\033[00m\]\$(parse_git_branch)\[\033[00m\]\$ "
-
-#PATH=$PATH:$HOME/local/node/bin #nodejs
-PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
-PATH=$PATH:$HOME/src/scripts # scripts
-
-export TERM=xterm-256color
-
-# git bash completion
-source ~/git-completion.bash
-
-export VISUAL=vim
-export EDITOR=vim
-
-### Added by the Heroku Toolbelt
-export PATH="/usr/local/heroku/bin:$PATH"
+export PATH="/usr/local/sbin:/user/bin:$PATH"
+export NVM_DIR="$HOME/.nvm"
+  . "/usr/local/opt/nvm/nvm.sh"
 
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
-export PS1="$GREEN\w$YELLOW\$(parse_git_branch)$DEFAULT: "
-alias chrome='/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --disable-web-security --allow-file-access-from-files'
